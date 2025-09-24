@@ -1,20 +1,20 @@
-import { notFound } from 'next/navigation'
-import { CustomMDX } from 'app/components/mdx'
-import { formatDate, getProjects } from 'app/projects/utils'
-import { baseUrl } from 'app/sitemap'
+import { notFound } from 'next/navigation';
+import { CustomMDX } from 'app/components/mdx';
+import { formatDate, getProjects } from 'app/projects/utils';
+import { baseUrl } from 'app/sitemap';
 
 export async function generateStaticParams() {
-  let projects = getProjects()
+  let projects = getProjects();
 
   return projects.map((project) => ({
     slug: project.slug,
-  }))
+  }));
 }
 
 export function generateMetadata({ params }) {
-  let project = getProjects().find((project) => project.slug === params.slug)
+  let project = getProjects().find((project) => project.slug === params.slug);
   if (!project) {
-    return
+    return;
   }
 
   let {
@@ -22,10 +22,10 @@ export function generateMetadata({ params }) {
     publishedAt: publishedTime,
     summary: description,
     image,
-  } = project.metadata
+  } = project.metadata;
   let ogImage = image
     ? image
-    : `${baseUrl}/og?title=${encodeURIComponent(title)}`
+    : `${baseUrl}/og?title=${encodeURIComponent(title)}`;
 
   return {
     title,
@@ -48,51 +48,51 @@ export function generateMetadata({ params }) {
       description,
       images: [ogImage],
     },
-  }
+  };
 }
 
-export default function Blog({ params }) {
-  let project = getProjects().find((project) => project.slug === params.slug)
+export default function Project({ params }) {
+  let project = getProjects().find((project) => project.slug === params.slug);
 
   if (!project) {
-    notFound()
+    notFound();
   }
-
-  return (
-    <section>
-      <script
-        type="application/ld+json"
-        suppressHydrationWarning
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            '@context': 'https://schema.org',
-            '@type': 'BlogPosting',
-            headline: project.metadata.title,
-            datePublished: project.metadata.publishedAt,
-            dateModified: project.metadata.publishedAt,
-            description: project.metadata.summary,
-            image: project.metadata.image
-              ? `${baseUrl}${project.metadata.image}`
-              : `/og?title=${encodeURIComponent(project.metadata.title)}`,
-            url: `${baseUrl}/projects/${project.slug}`,
-            author: {
-              '@type': 'Person',
-              name: 'My Portfolio',
-            },
-          }),
-        }}
-      />
-      <h1 className="title font-semibold text-2xl tracking-tighter">
-        {project.metadata.title}
-      </h1>
-      <div className="flex justify-between items-center mt-2 mb-8 text-sm">
-        <p className="text-sm text-neutral-600 dark:text-neutral-400">
-          {formatDate(project.metadata.publishedAt)}
-        </p>
-      </div>
-      <article className="prose">
-        <CustomMDX source={project.content} />
-      </article>
-    </section>
-  )
+  return <div>Test Render: {project.content}</div>;
+  // return (
+  //   <section>
+  //     <script
+  //       type='application/ld+json'
+  //       suppressHydrationWarning
+  //       dangerouslySetInnerHTML={{
+  //         __html: JSON.stringify({
+  //           '@context': 'https://schema.org',
+  //           '@type': 'BlogPosting',
+  //           headline: project.metadata.title,
+  //           datePublished: project.metadata.publishedAt,
+  //           dateModified: project.metadata.publishedAt,
+  //           description: project.metadata.summary,
+  //           image: project.metadata.image
+  //             ? `${baseUrl}${project.metadata.image}`
+  //             : `/og?title=${encodeURIComponent(project.metadata.title)}`,
+  //           url: `${baseUrl}/projects/${project.slug}`,
+  //           author: {
+  //             '@type': 'Person',
+  //             name: 'My Portfolio',
+  //           },
+  //         }),
+  //       }}
+  //     />
+  //     <h1 className='title font-semibold text-2xl tracking-tighter'>
+  //       {project.metadata.title}
+  //     </h1>
+  //     <div className='flex justify-between items-center mt-2 mb-8 text-sm'>
+  //       <p className='text-sm text-neutral-600 dark:text-neutral-400'>
+  //         {formatDate(project.metadata.publishedAt)}
+  //       </p>
+  //     </div>
+  //     <article className='prose'>
+  //       <CustomMDX source={project.content} />
+  //     </article>
+  //   </section>
+  // );
 }
